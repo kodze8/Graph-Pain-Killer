@@ -1,0 +1,252 @@
+import{
+    addRow, 
+    clearStack, 
+    removeRow
+} from "../input_output/stack.js"
+
+import {  
+    edgesToAdj, 
+    errorPage,
+    convertToVisualizationFormat,
+    generateValidGraph
+} from '../graph/graphUtils.js';
+
+import{
+    edgesToAdjDirected, 
+    setDirection,
+} from '../graph/directedGraphUtils.js'
+
+import { 
+    markNode,
+    visualizeGraph, 
+    visualizeDirectedGraph,
+} from '../graph/vizualizer.js';
+
+import { DIMENSIONS, COLORS, SETTINGS, indexToLetterMap } from '../constants.js'
+
+const svg = d3.select("svg")
+let n, edges, nodes; 
+var graph;
+
+const update = document.getElementById("update")
+
+
+var direction = document.getElementById('direction');
+direction.addEventListener("change", changeDirection);
+var DIRECTED = true
+
+var tempInput = document.getElementById('temp')
+
+var table = document.getElementById('stack')
+
+
+
+
+function cyclePath(neighbour,path){
+    var include = false
+    for(var node of path){
+        if(node == neighbour){
+            include = true;
+        }
+        if(include){
+            svg.selectAll('circle')
+            .filter(d => d.id === node)
+            .attr('fill', COLORS.YELLOW)
+            .attr('stroke-width', 8);
+        }
+    }
+}
+
+
+function waitForTimeout() {
+    return new Promise(resolve => {
+        setTimeout(resolve, -(tempInput.value-tempInput.max)); 
+    });
+}
+
+
+// --------- UNDIRECTED ---------
+function detectCycle(edges, n, callback) {
+    var adj = edgesToAdj(n, edges);
+
+    // Make the recursive function async to use await
+    async function rec(src, adj, path, prev) {
+        path.push(src);
+        markNode(svg, src, COLORS.YELLOW)
+        addRow(indexToLetterMap.get(src), table)
+        
+
+        for (var neighbour of adj.get(src)) {
+            if (path.includes(neighbour)) {               
+                if (prev !== neighbour) {
+                    await waitForTimeout();
+                    cyclePath(neighbour, path)
+                    return true;
+                }
+            } 
+            else {
+                await waitForTimeout();
+                if (await rec(neighbour, adj, path, src)) { 
+                    return true;
+                }
+                // emptify the whole path
+                if (path.length > 0) {       
+                    await waitForTimeout();
+                    var removed = path.pop();
+                    markNode(svg, removed, null)
+                    removeRow(table)
+                }
+            }
+        }
+        return false;
+    }
+
+
+    (async () => {
+        const cycle_exists = await rec(0, adj, [], 0);
+        update.innerHTML = `<br>finished with ${cycle_exists ? "cycle" : "no cycle"}`;
+        callback();
+    })();
+}
+
+
+
+
+// --------- UNDIRECTED ---------
+function detectCycleDirected(edges, n, callback) {
+    async function rec(adj, src, path, visited) {
+        path.push(src);
+        visited.add(src);
+        markNode(svg, src, COLORS.YELLOW);
+        addRow(indexToLetterMap.get(src), table)
+        
+
+        for (var nei of adj.get(src)) {
+            if (path.includes(nei)) {
+                await waitForTimeout();
+                cyclePath(nei, path); 
+                return true;
+            } else if (!visited.has(nei)) {
+                await waitForTimeout();
+                if (await rec(adj, nei, path, visited)) { 
+                    return true;
+                }
+            }
+        }
+        await waitForTimeout();
+        path.pop();
+        markNode(svg, src, null);
+        removeRow(table);
+        return false; 
+    }
+
+    (async () => {
+        var adj = edgesToAdjDirected(n, edges);
+        var visited = new Set();
+
+        for (var i = 0; i < n; i++) {
+            if (!visited.has(i)) {
+                if(i!=0)
+                    await waitForTimeout();
+                var cycle_exists = await rec(adj, i, [], visited);
+                if (cycle_exists) {
+                    update.innerHTML = `<br>finished with "cycle"`;
+                    // update  add cycle 
+                    callback();
+                    return; 
+                }
+            }
+        }
+        update.innerHTML = `<br>finished with no cycle`;
+        callback();
+    })();
+}
+
+
+
+
+// function for start detecting cycle. 
+var process_goes = false;
+function startCycleDectection(){
+   if(!process_goes){
+       process_goes = true;
+       svg.selectAll("circle")
+            .data(graph.nodes)
+            .attr("fill", COLORS.NATURAL)
+            .attr('stroke', 'none')
+
+        clearStack(table)
+        update.innerHTML = ""
+        var dir  = parseInt(direction.value, 10); 
+
+        if(dir==0){
+            detectCycle(edges, n, ()=>{
+                process_goes = false; 
+            });
+
+        } else{
+            detectCycleDirected(edges, n, ()=>{
+                process_goes = false; 
+            });
+           
+        }
+   }
+}
+
+
+
+
+
+function changeGraph() {
+    if (!process_goes) {
+        svg.selectAll("*").remove(); 
+        update.innerHTML = ""
+        clearStack(table)
+        generateGraph();
+        vizualize();
+    }
+}
+function changeDirection(){
+    if(!process_goes){
+        var dir  = parseInt(direction.value, 10); 
+        if(dir==0){
+            DIRECTED = false   
+        }else{
+            DIRECTED = true   
+        }
+        vizualize()
+    }
+}
+
+
+
+function vizualize(){
+    try {
+        // UNDIRECTED
+        if(!DIRECTED){
+            graph = convertToVisualizationFormat(edges, nodes);
+            visualizeGraph(graph, svg);
+
+        // DIRECTED    
+        }else{
+            edges = setDirection(edges)
+            graph = convertToVisualizationFormat(edges, nodes);
+            visualizeDirectedGraph(graph, svg);
+        }
+    } catch (error) {
+        errorPage()
+    }
+}
+
+function generateGraph(){
+    graph = generateValidGraph();
+    [n, edges, nodes] = graph
+}
+
+
+
+generateGraph()
+vizualize()
+document.getElementById("start").addEventListener("click", startCycleDectection);
+document.getElementById("refresh").addEventListener("click", changeGraph);
+

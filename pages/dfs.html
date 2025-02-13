@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depth First Search</title>
+    <link rel="icon" type="image/png" href="../assets/logo/g_logo.png"> 
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../css/dijkstra.css">
+    <link rel="stylesheet" href="../css/dfs.css">
+
+</head>
+<body>
+    <!-- Block 1 -->
+    <div id="header_block">
+        <div id="menu_container">
+            <a id="menu" href="../index.html">MENU</a>
+        </div>
+        <div id="title_container">
+            <h4 id="title">Depth First Search </h4>
+        </div>
+
+    </div>
+
+    <!-- Block 2 -->
+    <div id="graph_block">
+        <div id="graph_container">
+            <div> <svg id="graph_grid" width="500" height="300"></svg></div>
+            
+            <div id="button_block">
+                <div id="left">
+                    <div id="src_container">
+                        <select name="src" id="src"></select>
+                    </div>
+                </div>
+
+                <div id="right">
+                    <div id="refresh_container">
+                        <button id="refresh">Refresh</button>
+                    </div>
+                    <div id="start_container">
+                        <button id="start">Start DFS</button>
+                    </div>
+                </div>
+            
+            </div>
+        </div>
+
+        
+        <div id="temp_container">
+            <label class="temp_label" for="temp">fast</label>
+            <div>
+                <input  id="temp"  type="range" min="100" max="2000" step="100" value="1500">    
+            </div>
+          
+            <label class="temp_label"  id="low" for="temp">slow</label>
+        </div>
+        
+        <div id="stack_conatainer">
+            <table id="stack">
+                <tr>
+                    <th>DFS Stack</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+
+    <!-- Block 3  -->
+    <div id="info_block">
+        <div id="info_container">
+            <p id="info">
+                Depth-First Search (DFS) is a fundamental algorithm used for traversing or searching through graph data structures. It explores as far as possible along each branch before backtracking, which means it goes deep into a graph or tree before exploring its siblings.DFS is particularly useful for tasks like pathfinding, cycle detection, and solving puzzles like mazes.
+            </p>
+        </div>
+
+        <div id="code_container">
+            <label id="code_title">Pseudo Code</label>
+            <pre id="code">
+DFS(graph, node, visited):
+    // Mark the current node as visited
+    visited[node] = true
+
+    // Visit all the neighbors of the current node
+    for each neighbor in graph[node]:
+        if not visited[neighbor]:
+            DFS(graph, neighbor, visited)
+            </pre>
+        </div>
+    </div>
+
+</div>
+    
+
+
+
+<script  type="module"  src="../js/algorithms/dfs.js"></script>
+</body>
+</html>

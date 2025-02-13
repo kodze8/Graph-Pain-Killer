@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Find</title>
+    <link rel="icon" type="image/png" href="../assets/logo/g_logo.png"> 
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="../css/dijkstra.css">
+    <link rel="stylesheet" href="../css/dfs.css">
+    <link rel="stylesheet" href="../css/edge_table.css" />
+
+
+</head>
+<body>    
+    <!-- Block 1 -->
+    <div id="header_block">
+        <div id="menu_container">
+             <a id="menu" href="../index.html">MENU</a>
+        </div>
+        <div id="title_container">
+            <h4 id="title">Find Connected Components with Quick Find</h4>
+        </div>
+
+    </div>
+
+
+    <!-- Block 2 -->
+    <div id="graph_block">
+        <div id="graph_container">
+            <div> <svg id="graph_grid" width="500" height="300"></svg></div>
+            <div id="button_block">
+
+                <!-- for the sake of consistency -->
+                <div id="left">
+                </div>
+
+                <div id="right">
+                    <div id="refresh_container">
+                        <button id="refresh">Refresh</button>
+                    </div>
+                
+                    <div id="start_container">
+                        <button id="start">Quick Find</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="temp_container">
+            <label class="temp_label" for="temp">fast</label>
+            <div>
+                <input  id="temp"  type="range" min="100" max="2000" step="100" value="1500">
+            </div>
+            <label class="temp_label"  id="low" for="temp">slow</label>
+        </div>
+        
+
+
+        <div id="data_container">
+            <div id="table_container">
+              <div>
+                <table id="edge-table">
+                  <thead>
+                    <tr>
+                      <th>Edges</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Rows will be added here -->
+                  </tbody>
+                </table>
+              </div>
+    
+              <div>
+                <table id="data-table">
+                  <thead>
+                    <tr>
+                      <!-- Headers will be added here by JavaScript -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Rows will be added here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+
+
+        <!-- <div id="stack_conatainer">
+            <div id="update_container">
+                <p class="node_data" id="update"></p>
+            </div>
+        </div> -->
+    </div>
+
+
+    <!-- Block 3  -->
+    <div id="info_block">
+      <div id="info_container">
+          <p id="info">
+            Quick-Find is an algorithm used to find connected components and detect cycles in a graph. Each element is initially assigned a unique ID, representing its set. When an edge connects two vertices, the algorithm merges their sets by assigning one of the IDs to both vertices and all other elements that shared their original IDs. This process ensures that all elements in a connected component share the same ID, making it easy to determine connectivity.
+          </p>
+      </div>
+
+      <div id="code_container">
+          <label id="code_title">Pseudo Code</label>
+          <pre id="code">
+function find(ids, node) {
+    return ids[node]
+}
+
+function union(ids, node1, node2) {
+    if find(ids, node1) != find(ids, node2):
+        for each index in ids:
+            if ids[index] == find(ids, node2):
+                ids[index] = find(ids, node1)
+}
+
+function quickFind(graph) {
+    ids = [0, 1, 2, ..., n-1]
+    for each edge (node1, node2) in graph.edges:
+        union(ids, node1, node2)
+    return ids
+}  
+          </pre>
+      </div>
+    </div>
+
+
+
+
+
+
+    
+
+
+
+
+    <script  type="module"  src="../js/algorithms/quickFind.js"></script>
+</body>
+</html>
