@@ -1,7 +1,7 @@
 # Graph PainKiller
 Graph PainKiller is an interactive, highly scalable graph algorithm visualizer designed to help students, enthusiasts, and developers deeply understand graph algorithms.
 
-Check the Web: (https://kodze8.github.io/Graph-Pain-Killer/)[https://kodze8.github.io/Graph-Pain-Killer/]
+Check the Web: [https://kodze8.github.io/Graph-Pain-Killer/](https://kodze8.github.io/Graph-Pain-Killer/)
 
 ### Features
 - Random Graph Generation: Instantly generate diverse graph structures.
